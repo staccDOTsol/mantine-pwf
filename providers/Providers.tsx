@@ -8,7 +8,7 @@ import { Notifications } from '@mantine/notifications';
 import { AppShell } from '@mantine/core';
 import { ReactQueryStreamedHydration } from '@tanstack/react-query-next-experimental';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Header } from '@/components/Header/Header';
 import { UmiProvider } from './UmiProvider';
 import { EnvProvider } from './EnvProvider';
@@ -16,11 +16,9 @@ import { Env } from './useEnv';
 
 export function Providers({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const queryEnv = searchParams.get('env');
   const [client] = useState(new QueryClient());
-  const [env, setEnv] = useState<Env>((queryEnv === 'mainnet' || queryEnv === 'devnet') ? queryEnv : 'mainnet');
+  const [env, setEnv] = useState<Env>('mainnet');
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -47,11 +45,8 @@ export function Providers({ children }: { children: ReactNode }) {
     switch (env) {
       case 'mainnet':
         return process.env.NEXT_PUBLIC_MAINNET_RPC_URL;
-      case 'localhost':
-        return 'http://localhost:8899';
-      case 'devnet':
       default:
-        return process.env.NEXT_PUBLIC_DEVNET_RPC_URL;
+        return process.env.NEXT_PUBLIC_MAINNET_RPC_URL;
     }
   }, [env]);
 
